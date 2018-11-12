@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">StepChamp</string>
+    <string name="title_activity_firebase_ui">FirebaseUIActivity</string>
+    <string name="welcomePrompt">Welcome to StepChamp!</string>
+    <string name="sign_out">Sign out</string>
+    <string name="menu_title">Menu</string>
+    <string name="signInPrompt">Sign In</string>
+
+
 </resources>
