@@ -1,7 +1,11 @@
 package fsu.cop4656.daniel.stepchamp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,9 +18,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FirebaseUIActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
@@ -72,6 +80,8 @@ public class FirebaseUIActivity extends AppCompatActivity {
                 // Successfully signed in
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 Intent intent = new Intent(this, HomeActivity.class);
+                Context c = getApplicationContext();
+                saveToDatabase(user,c);
                 startActivity(intent);
                 // ...
             } else {
@@ -93,6 +103,32 @@ public class FirebaseUIActivity extends AppCompatActivity {
             }
         }
     }
+
+
+    public static boolean saveToDatabase(FirebaseUser acct,Context c) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("users");
+
+        final LocationManager lm = (LocationManager) c.getSystemService(Context.LOCATION_SERVICE);
+
+        Location lastLoc = lm.getLastKnownLocation( LocationManager.NETWORK_PROVIDER);
+        double latitude = 0;
+        double longitude = 0;
+       if(lastLoc != null) {
+            latitude = lastLoc.getLatitude();
+           longitude = lastLoc.getLongitude();
+       }
+        User user = new User(acct.getDisplayName(),Double.toString(latitude),Double.toString(longitude),0);
+
+        String key = myRef.push().getKey();
+        Map<String, Object> postValues = user.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put(key, postValues);
+        myRef.updateChildren(childUpdates);
+        return true;
+    }
+
+
 
 
 
