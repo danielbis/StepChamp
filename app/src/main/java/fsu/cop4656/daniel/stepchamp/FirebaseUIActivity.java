@@ -262,7 +262,7 @@ public class FirebaseUIActivity extends AppCompatActivity {
         DatabaseReference myRef = database.getReference("users");
 
 
-        setLastKnownLocation();
+        setLastKnownLocation(); // get the location 
         User user = new User(acct.getDisplayName(), Double.toString(mLatitude), Double.toString(mLongitude), 0);
 
         String key = myRef.push().getKey();
