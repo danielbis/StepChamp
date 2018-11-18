@@ -1,0 +1,71 @@
+{
+  "project_info": {
+    "project_number": "329647604342",
+    "firebase_url": "https://stepchamp-cop4656.firebaseio.com",
+    "project_id": "stepchamp-cop4656",
+    "storage_bucket": "stepchamp-cop4656.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:329647604342:android:95d5422d9ed2cdca",
+        "android_client_info": {
+          "package_name": "fsu.cop4656.daniel.stepchamp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "329647604342-js8kga4ugr1nqt3v3ho5chr2svnt3hr4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fsu.cop4656.daniel.stepchamp",
+            "certificate_hash": "ed73241a6f6c0a11df2e51042310f33a845cb297"
+          }
+        },
+        {
+          "client_id": "329647604342-du1lkbib8qk2000ohjstgeaeskvujebd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fsu.cop4656.daniel.stepchamp",
+            "certificate_hash": "a780ca70111263e409e55fe3317df409d062b78b"
+          }
+        },
+        {
+          "client_id": "329647604342-tdecvbfco38btgujcksqp5046a71p6p2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fsu.cop4656.daniel.stepchamp",
+            "certificate_hash": "c4ce0d9f7fd78a6a4bef0115d336607868817310"
+          }
+        },
+        {
+          "client_id": "329647604342-6nh3fvleucjqkd4om8jmu3cv8kksfd7j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-TMOwPkul3Tma9-BKeQibocQ4pNbC308"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "329647604342-6nh3fvleucjqkd4om8jmu3cv8kksfd7j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
