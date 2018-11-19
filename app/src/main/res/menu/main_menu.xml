@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/userprofile"
-        android:layout_width="match_parent"
-        android:title="@string/user_profile" />
+
     <item
         android:id="@+id/signOutItem"
         android:layout_width="match_parent"
