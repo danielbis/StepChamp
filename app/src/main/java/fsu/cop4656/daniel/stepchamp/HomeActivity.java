@@ -210,6 +210,8 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 long localSteps = mUser.totalsteps;
 
 
+
+                
                 mSteps.setValue(localSteps + (long)values[0]);
                 // Inflate the layout for this fragment
 
