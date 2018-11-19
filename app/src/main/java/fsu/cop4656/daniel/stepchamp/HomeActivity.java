@@ -211,7 +211,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
-                
+
                 mSteps.setValue(localSteps + (long)values[0]);
                 // Inflate the layout for this fragment
 
@@ -248,6 +248,11 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             case R.id.signOutItem:
                 signOut();
                 break;
+            case R.id.userprofile:
+                Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+                startActivity(intent);
+                break;
+
 
 
         }

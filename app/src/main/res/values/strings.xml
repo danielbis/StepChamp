@@ -8,6 +8,9 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="user_name">Name</string>
+    <string name="totalsteps">Number of Steps</string>
+    <string name="user_profile">Profile</string>
 
 
 </resources>
