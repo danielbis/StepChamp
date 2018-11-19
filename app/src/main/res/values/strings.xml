@@ -6,5 +6,8 @@
     <string name="menu_title">Menu</string>
     <string name="signInPrompt">Sign In</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 
 </resources>

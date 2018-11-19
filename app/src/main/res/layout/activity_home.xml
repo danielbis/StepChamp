@@ -1,16 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="347dp"
+        tools:context=".MapsActivity" />
+
     <TextView
         android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/welcomePrompt"
-        tools:layout_editor_absoluteX="144dp"
-        tools:layout_editor_absoluteY="204dp" />
-</android.support.constraint.ConstraintLayout>
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="348dp"
+        android:text="Step Leaders:"
+        android:textSize="30sp" />
+
+    <fragment
+        android:id="@+id/fragment2"
+        android:name="fsu.cop4656.daniel.stepchamp.RankingFragment"
+        android:layout_width="match_parent"
+        android:layout_height="146dp"
+        android:layout_marginTop="395dp" />
+
+</FrameLayout>
