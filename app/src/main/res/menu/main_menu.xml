@@ -5,6 +5,9 @@
         android:id="@+id/signOutItem"
         android:layout_width="match_parent"
         android:title="@string/sign_out" />
-
+    <item
+        android:id="@+id/userprofile"
+        android:layout_width="match_parent"
+        android:title="@string/user_profile" />
 
 </menu>

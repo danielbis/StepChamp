@@ -31,6 +31,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -166,6 +168,10 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
 
 
+
+
+
+
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(FSU,(float)15.25));
     }
 
@@ -189,9 +195,38 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     public void onSensorChanged(SensorEvent event){
-        float[] values = event.values;
+        final float[] values = event.values;
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference("users/" + user.getUid());
+        Query query = FirebaseDatabase.getInstance().getReference("users/"+ user.getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DatabaseReference mSteps = myRef.child("totalsteps");
+                User mUser = dataSnapshot.getValue(User.class);
+
+                long localSteps = mUser.totalsteps;
+
+
+
+                
+                mSteps.setValue(localSteps + (long)values[0]);
+                // Inflate the layout for this fragment
+
+            }
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("FAIL", "Failed to read value.", error.toException());
+            }
+        });
+
+        Log.i("RANKING", "userdID: " + String.valueOf(user.getUid()));
         Log.d("onSensorChanged", "value: " + String.valueOf(values[0]));
     }
+
 
 
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -213,10 +248,11 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             case R.id.signOutItem:
                 signOut();
                 break;
-
-
+            case R.id.userprofile:
+                Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+                startActivity(intent);
+                break;
         }
-
         return true;
     }
 

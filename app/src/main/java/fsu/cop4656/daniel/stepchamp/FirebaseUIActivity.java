@@ -262,32 +262,30 @@ public class FirebaseUIActivity extends AppCompatActivity {
         }
     };
 
+
     public boolean saveToDatabase(FirebaseUser acct) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("users");
 
 
-        setLastKnownLocation(); // get the location 
-        User user = new User(acct.getDisplayName(), Double.toString(mLatitude), Double.toString(mLongitude), 125);
-
-        String key = myRef.push().getKey();
-        Map<String, Object> postValues = user.toMap();
-        final Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(key, postValues);
-
-
+        setLastKnownLocation(); // get the location
+        final User user = new User(acct.getDisplayName(), Double.toString(mLatitude), Double.toString(mLongitude), 125);
+        final String uid = acct.getUid();
         Query query = FirebaseDatabase.getInstance().getReference("users")
                 .orderByChild("nickname").equalTo(acct.getDisplayName());
+
         query.addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-              if(!dataSnapshot.exists()){
-                  myRef.updateChildren(childUpdates);
-              }
-              else{
-                  return;
-              }
+                if(!dataSnapshot.exists()){
+                    myRef.child(uid).setValue(user);
+
+                }
+                else{
+                    return;
+                }
 
             }
             @Override
