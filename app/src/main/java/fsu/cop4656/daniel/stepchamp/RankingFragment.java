@@ -46,7 +46,6 @@ public class RankingFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_ranking, container, false);
 
         lv = (ListView) view.findViewById(R.id.rankinglist);
-        updateTest();
         loadTopUsers();
 
         return view;
@@ -102,14 +101,5 @@ public class RankingFragment extends Fragment {
 
     }
 
-    public void updateTest(){
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myRef = database.getReference("users/" + user.getUid());
-        DatabaseReference mSteps = myRef.child("totalsteps");
-        mSteps.setValue(250);
-
-    }
-
+   
 }

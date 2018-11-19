@@ -77,30 +77,32 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     public void onSensorChanged(SensorEvent event){
-        float[] values = event.values;
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final float[] values = event.values;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        Query query = FirebaseDatabase.getInstance().getReference("users").orderByChild("nickname").equalTo(user.getDisplayName());
-
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference("users/" + user.getUid());
+        Query query = FirebaseDatabase.getInstance().getReference("users/"+ user.getUid());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String key = dataSnapshot.getKey();
+                DatabaseReference mSteps = myRef.child("totalsteps");
                 User mUser = dataSnapshot.getValue(User.class);
-                mUser.totalsteps = 250;
 
-                Map<String, Object> postValues = mUser.toMap();
-                final Map<String, Object> childUpdates = new HashMap<>();
-                childUpdates.put(key, postValues);
+                long localSteps = mUser.totalsteps;
+
+
+                mSteps.setValue(localSteps + (long)values[0]);
+                // Inflate the layout for this fragment
 
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("FAIL", "Failed to read value.", error.toException());
             }
         });
+
         Log.i("RANKING", "userdID: " + String.valueOf(user.getUid()));
         Log.d("onSensorChanged", "value: " + String.valueOf(values[0]));
     }
@@ -144,4 +146,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
         // [END auth_fui_signout]
     }
+
+
+
 }
