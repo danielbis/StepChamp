@@ -38,13 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     Button signIn;
 
-    private LocationManager mLocationManager;
-    private boolean mLocationPermissionGranted = false;
-    private double mLongitude = 0;
-    private double mLatitude = 0;
-
-    private static final int PERMISSION_REQUEST_LOCATIONS = 3;
-
 
 
 
@@ -62,8 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        mLocationManager = (LocationManager) getSystemService(
-                LOCATION_SERVICE);
+
         checkCurrentUser();
     }
 
@@ -74,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
             // User is signed in
             Intent intent = new Intent(this, HomeActivity.class);
             Log.i("TEST","TEST");
-            updateLocation(user);
             startActivity(intent);
         } else {
             // No user is signed in
@@ -87,166 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private void requestLocationsPermission() {
 
-        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) ||
-                ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setTitle("Requesting internet permissions");
-            builder.setMessage("This application requires internet. Accept to continue");
-            builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
-                                    android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                            PERMISSION_REQUEST_LOCATIONS);
-                }
-            });
-            builder.show();
-        } else {
-            // No explanation needed, we can request the permission.
-
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION},
-                    PERMISSION_REQUEST_LOCATIONS);
-        }
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == PERMISSION_REQUEST_LOCATIONS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.i(TAG, "Location permissions were granted.");
-            } else {
-                // Permission request was denied.
-                Toast.makeText(MainActivity.this,
-                        "Location permission request was denied. Location permission is required for this application ",
-                        Toast.LENGTH_SHORT).show();
-                Log.i(TAG, "Location permission request was denied. Requesting again...");
-                requestLocationsPermission(); // repeat until they confirm
-            }
-        }
-    }
-
-
-    private void setLastKnownLocation() {
-        if (!mLocationPermissionGranted) {
-            requestLocationsPermission();
-        }
-        Location lastLoc = null;
-        try {
-            lastLoc = mLocationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-        } catch (SecurityException e) {
-            requestLocationsPermission();
-        }
-        if(lastLoc == null) {
-            Log.e(TAG, "No last known location"); // log to errors
-            return;
-        }
-
-
-        mLatitude = lastLoc.getLatitude();
-        mLongitude = lastLoc.getLongitude();
-
-        if (mLatitude == 0|| mLongitude == 0) {
-            Log.e(TAG, "Location not set!");
-        }
-    }
-
-
-    private LocationListener mLocationListener = new LocationListener() {
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-            Toast.makeText(getApplicationContext(), "Waiting for location",
-                    Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-            Toast.makeText(getApplicationContext(), "Connection Lost",
-                    Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onLocationChanged(Location location) {
-            Location lastLoc = null;
-
-            try {
-                lastLoc = mLocationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-            } catch (SecurityException e) {
-                requestLocationsPermission();
-            }
-            mLatitude = lastLoc.getLatitude();
-            mLongitude = lastLoc.getLongitude();
-
-            if (mLatitude == 0|| mLongitude == 0) {
-                Log.e(TAG, "Location not changed!");
-            }
-        }
-    };
-
-
-    public void updateLocation(FirebaseUser acct) {
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myRef = database.getReference("users");
-        Log.i("TEST","TEST2");
-        Log.i("TEST","TEST3");
-        Log.i("TEST","TEST4");
-        Log.i("TEST","TEST5");
-        Log.i("TEST","TEST6");
-
-        setLastKnownLocation(); // get the location
-        final User user = new User(acct.getDisplayName(), Double.toString(mLatitude), Double.toString(mLongitude), 3465);
-        final String uid = acct.getUid();
-        Query query = FirebaseDatabase.getInstance().getReference("users")
-                .orderByChild("nickname").equalTo(acct.getDisplayName());
-
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                if(!dataSnapshot.exists()){
-                    myRef.child(uid).setValue(user);
-
-                }
-                else{
-
-                    for (DataSnapshot childSnapshot: dataSnapshot.getChildren()) {
-                        String key = childSnapshot.getKey();
-                        Log.i("LAT:", "lat:" + mLatitude);
-                        Log.i("Long:", "long:" + mLongitude);
-
-                        if (((mLatitude < 30.447300) && (mLatitude > 30.435546)) && ((mLongitude > -84.306552) && (mLongitude < -84.290877))) {
-                            Map<String, Object> postValues = user.toMap();
-                            myRef.child(key).child("latitude").setValue(Double.toString(mLatitude));
-                            myRef.child(key).child("longitude").setValue(Double.toString(mLongitude));
-                            return;
-                        }
-                    }
-
-                }
-
-            }
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("FAIL", "Failed to read value.", error.toException());
-            }
-        });
-    }
 }
 
 

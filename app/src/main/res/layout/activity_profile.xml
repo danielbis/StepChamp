@@ -7,6 +7,26 @@
     tools:context=".ProfileActivity">
 
     <TextView
+        android:id="@+id/daily4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView3"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="189dp"
+        android:text="@string/yearly" />
+
+    <TextView
+        android:id="@+id/daily3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView3"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="114dp"
+        android:text="@string/weekly" />
+
+    <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,14 +37,24 @@
         android:text="@string/user_name" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/daily"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/textView3"
         android:layout_alignParentTop="true"
         android:layout_marginStart="0dp"
         android:layout_marginTop="83dp"
-        android:text="@string/totalsteps" />
+        android:text="@string/daily" />
+
+    <TextView
+        android:id="@+id/daily2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView3"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="149dp"
+        android:text="@string/monthly" />
 
     <TextView
         android:id="@+id/nameBox"
@@ -35,9 +65,32 @@
         android:layout_marginEnd="131dp" />
 
     <TextView
-        android:id="@+id/stepsBox"
+        android:id="@+id/dailyBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/nameBox"
-        android:layout_alignBottom="@+id/textView4" />
+        android:layout_alignBottom="@+id/daily" />
+
+    <TextView
+        android:id="@+id/weeklyBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/nameBox"
+        android:layout_alignTop="@+id/daily3" />
+
+    <TextView
+        android:id="@+id/monthlyBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/nameBox"
+        android:layout_alignTop="@+id/daily2" />
+
+    <TextView
+        android:id="@+id/yearlyBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="190dp"
+        android:layout_marginEnd="140dp" />
 </RelativeLayout>

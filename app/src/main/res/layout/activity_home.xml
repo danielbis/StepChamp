@@ -11,14 +11,14 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="347dp"
+        android:layout_height="313dp"
         tools:context=".MapsActivity" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="348dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="328dp"
         android:paddingLeft="15dp"
         android:text="Step Leaders:"
         android:textSize="30sp" />
@@ -27,7 +27,7 @@
         android:id="@+id/fragment2"
         android:name="fsu.cop4656.daniel.stepchamp.RankingFragment"
         android:layout_width="match_parent"
-        android:layout_height="146dp"
-        android:layout_marginTop="395dp" />
+        android:layout_height="150dp"
+        android:layout_marginTop="365dp" />
 
 </FrameLayout>

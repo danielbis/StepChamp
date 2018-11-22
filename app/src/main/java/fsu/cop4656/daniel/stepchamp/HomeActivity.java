@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +33,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -40,8 +46,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,9 +67,13 @@ import static java.lang.Math.toIntExact;
 
 public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    private static final String TAG = "HomeActivity";
     private SensorManager mSensorManager;
     private Sensor mStepCounterSensor;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    final CollectionReference users = db.collection("users");
+    long dailySteps;
     private GoogleMap mMap;
     Marker marker0;
     Marker marker1;
@@ -67,6 +86,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        getOrCreateDailySteps();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -85,9 +105,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng FSU = new LatLng(30.441210, -84.298050);
 
 
-        Query query = FirebaseDatabase.getInstance().getReference("users")
-                .orderByChild("totalsteps")
-                .limitToLast(3);
+        com.google.firebase.firestore.Query query = users.orderBy("totalsteps").limit(3);
         // https://stackoverflow.com/questions/30933328/how-to-convert-firebase-data-to-java-object
         final Double[] latitudearray = new Double[4];
         final Double[] longitudearray = new Double[4];
@@ -96,22 +114,22 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         final String[] namearray = new String[4];
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 int i = 0;
-                for(DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
-
-                    String latitude = (String) messageSnapshot.child("latitude").getValue();
+                for(QueryDocumentSnapshot messageSnapshot :queryDocumentSnapshots) {
+                    User tempUser = messageSnapshot.toObject(User.class);
+                    String latitude = tempUser.latitude;
                     Double latval = Double.parseDouble(latitude);
                     latitudearray[i] = latval;
 
-                    String longitude = (String) messageSnapshot.child("longitude").getValue();
+                    String longitude = tempUser.longitude;
                     Double longval = Double.parseDouble(longitude);
                     longitudearray[i] = longval;
-                    namearray[i] = (String) messageSnapshot.child("nickname").getValue();
+                    namearray[i] = tempUser.nickname;
 
-                    int steps = (int)(long) messageSnapshot.child("totalsteps").getValue();
+                    int steps = (int)(long) tempUser.totalsteps;
                     int stepval = steps;
                     steparray[i] = stepval;
 
@@ -119,7 +137,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     if( i == 3) {
 
-                    break;
+                        break;
                     }
                 }
                 Log.d("LAT", "value = " + i );
@@ -130,11 +148,11 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Log.d("LONG", "value = " + longitudearray[j]);
                     if(j==0){
                         marker0 = mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(latitudearray[j], longitudearray[j]))
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-                            .title(namearray[j])
-                            .snippet( "Steps: " + steparray[j]));
-                   }
+                                .position(new LatLng(latitudearray[j], longitudearray[j]))
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                                .title(namearray[j])
+                                .snippet( "Steps: " + steparray[j]));
+                    }
                     if(j==1){
                         marker1 = mMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(latitudearray[j], longitudearray[j]))
@@ -143,7 +161,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 .snippet( "Steps: " + steparray[j]));
                     }
                     if(j==2){
-                       marker2 = mMap.addMarker(new MarkerOptions()
+                        marker2 = mMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(latitudearray[j], longitudearray[j]))
                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
                                 .title(namearray[j])
@@ -158,18 +176,8 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
 
                 }
-
-            }
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("FAIL", "Failed to read value.", error.toException());
             }
         });
-
-
-
-
 
 
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(FSU,(float)15.25));
@@ -198,33 +206,12 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         final float[] values = event.values;
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myRef = database.getReference("users/" + user.getUid());
+        final DocumentReference currentUser = users.document(user.getUid());
         Query query = FirebaseDatabase.getInstance().getReference("users/"+ user.getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                DatabaseReference mSteps = myRef.child("totalsteps");
-                User mUser = dataSnapshot.getValue(User.class);
+        Map<String, Object> data = new HashMap<>();
+        data.put("totalsteps", values[0]);
+        users.document(user.getUid()).set(data, SetOptions.merge());
 
-                long localSteps = mUser.totalsteps;
-
-
-
-                
-                mSteps.setValue(localSteps + (long)values[0]);
-                // Inflate the layout for this fragment
-
-            }
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("FAIL", "Failed to read value.", error.toException());
-            }
-        });
-
-        Log.i("RANKING", "userdID: " + String.valueOf(user.getUid()));
-        Log.d("onSensorChanged", "value: " + String.valueOf(values[0]));
     }
 
 
@@ -268,4 +255,79 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
         // [END auth_fui_signout]
     }
+
+    public void getOrCreateDailySteps(){
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Date date = cal.getTime();
+        final Timestamp now = new Timestamp(date);
+        final CollectionReference currentUserSteps = db.collection("users/" + user.getUid() + "/steps");
+        final DocumentReference stepsToday = currentUserSteps.document(now.toString());
+
+        stepsToday.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()){
+                    dailySteps = documentSnapshot.getLong("stepcount");
+                    Log.d(TAG, "Steps for today already created.");
+                }else{
+                    Map<String, Object> postValues = new HashMap<>();
+                    postValues.put("stepcount", 0);
+                    postValues.put("date", now);
+                    Log.d(TAG, "About to save.");
+                    currentUserSteps.document(now.toString()).set(postValues).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "Steps added successfully.");
+                            dailySteps = 0;
+                            Map<String, Object> hLevel = new HashMap<>();
+                            hLevel.put("totalsteps", dailySteps);
+                            users.document(user.getUid()).set(hLevel, SetOptions.merge());
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "Cannot add steps.");
+
+                        }
+                    });
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "Failure in get.");
+
+            }
+        });
+
+    }
+
+    public void simulateWalk(long s){
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Date date = cal.getTime();
+        final Timestamp now = new Timestamp(date);
+        final CollectionReference currentUserSteps = db.collection("users/" + user.getUid() + "/steps");
+        final DocumentReference stepsToday = currentUserSteps.document(now.toString());
+        Map<String, Object> postValues = new HashMap<>();
+        postValues.put("stepcount",  dailySteps + s);
+        postValues.put("date", now);
+        stepsToday.set(postValues);
+        Map<String, Object> hLevel = new HashMap<>();
+        hLevel.put("totalsteps", dailySteps +s);
+        users.document(user.getUid()).set(hLevel, SetOptions.merge());
+    }
+
+
 }

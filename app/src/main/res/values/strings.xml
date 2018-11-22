@@ -8,8 +8,12 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="user_name">Name</string>
+    <string name="user_name">Name:</string>
     <string name="totalsteps">Number of Steps</string>
     <string name="user_profile">Profile</string>
+    <string name="daily">Steps Today:</string>
+    <string name="monthly">Steps this month:</string>
+    <string name="weekly">Steps this week:</string>
+    <string name="yearly">Steps this year:</string>
 
 </resources>
